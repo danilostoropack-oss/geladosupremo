@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Gelado Supremo</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8f7;--surface:#fff;--mint:#cdebe6;--teal:#2a8d88;--deep:#1d5f5c;--rose:#c9406a;--on-rose:#fff;--ink:#22302f;--muted:#5f716f;--line:#e1e9e7;--warn:#a85d00;--warnbg:#fff4e0;--ok:#1d7a4f;--okbg:#e4f5ec;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d1c;--surface:#162826;--mint:#1f413e;--teal:#6fd0c8;--deep:#9fe3dc;--rose:#ff8fb0;--on-rose:#2a0d17;--ink:#e6f2f0;--muted:#9db6b2;--line:#264340;--warn:#ffc061;--warnbg:#3a2a10;--ok:#7fe0ad;--okbg:#123326;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d1c;--surface:#162826;--mint:#1f413e;--teal:#6fd0c8;--deep:#9fe3dc;--rose:#ff8fb0;--on-rose:#2a0d17;--ink:#e6f2f0;--muted:#9db6b2;--line:#264340;--warn:#ffc061;--warnbg:#3a2a10;--ok:#7fe0ad;--okbg:#123326;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Nunito,system-ui,sans-serif}
+h1,h2,h3{font-family:Fredoka,system-ui,sans-serif;margin:0;line-height:1.15;color:var(--deep)}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:2px solid transparent;cursor:pointer;background:var(--rose);color:var(--on-rose);font:600 15px Fredoka,sans-serif;padding:9px 18px;border-radius:999px;text-decoration:none;white-space:nowrap}
+.btn.alt{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn.ghost{background:none;color:var(--muted);padding:6px 10px}
+.btn.danger{background:none;border-color:var(--line);color:var(--rose)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.icon{width:36px;height:36px;padding:0;border-radius:50%;font-size:16px}
+label{display:grid;gap:4px;font-weight:700;font-size:14px}
+label .hint,.hint{font-weight:400;color:var(--muted);font-size:13px}
+input,select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--rose);margin:0}
+input[type=color]{padding:2px;height:42px}
+textarea{min-height:76px;resize:vertical}
+.check{display:flex;align-items:center;gap:8px;font-weight:700}
+.grid2{display:grid;gap:14px}
+@media(min-width:620px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media(min-width:620px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+.panel{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:14px}
+.panel h2{font-size:20px}
+.msg{border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;margin:0}
+.msg.err{background:color-mix(in srgb,var(--rose) 14%,var(--surface));color:var(--rose)}
+.msg.warn{background:var(--warnbg);color:var(--warn)}
+.msg.ok{background:var(--okbg);color:var(--ok)}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+#login form{max-width:440px;width:100%}
+#login .logo{width:84px;height:84px;border-radius:50%;justify-self:center}
+details.help{font-size:14px;background:var(--bg);border-radius:12px;padding:10px 14px}
+details.help summary{cursor:pointer;font-weight:700}
+details.help ol{padding-left:20px;margin:8px 0 0}
+/* topo */
+.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:2px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:10px;min-height:60px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.top h1{font-size:19px;margin-right:auto}
+.top h1 small{display:block;font:600 12px Nunito,sans-serif;color:var(--muted)}
+.status{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--okbg);color:var(--ok)}
+.status.dirty{background:var(--warnbg);color:var(--warn)}
+.tabs{display:flex;gap:6px;margin:18px 0;overflow-x:auto}
+.tab{font:600 15px Fredoka,sans-serif;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 18px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected=true]{background:var(--deep);border-color:var(--deep);color:var(--bg)}
+main{padding-bottom:60px}
+/* lista de produtos */
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.bar input{max-width:280px}
+.list{display:grid;gap:10px}
+.item{display:grid;grid-template-columns:72px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px}
+.item.off{opacity:.62}
+.thumb{width:72px;height:54px;border-radius:10px;object-fit:cover;background:var(--mint);display:grid;place-items:center;overflow:hidden}
+.thumb span{width:26px;height:26px;border-radius:50%}
+.item h3{font-size:17px}
+.item .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px}
+.item .meta b{color:var(--rose);font-family:Fredoka,sans-serif;font-size:15px}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--mint);color:var(--deep)}
+.pill.off{background:var(--line);color:var(--muted)}
+.pill.new{background:var(--warnbg);color:var(--warn)}
+.acts{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:620px){.item{grid-template-columns:60px 1fr}.thumb{width:60px;height:45px}.acts{grid-column:1/-1;justify-content:flex-start}}
+.empty{border:2px dashed var(--line);border-radius:16px;padding:28px;text-align:center;color:var(--muted)}
+/* dialog */
+dialog{border:0;border-radius:22px;padding:0;width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(10,25,24,.55)}
+dialog form,dialog .body{padding:20px;display:grid;gap:14px}
+dialog .foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;position:sticky;bottom:0;background:var(--surface);padding:12px 0 2px}
+.drop{border:2px dashed var(--line);border-radius:16px;display:grid;place-items:center;aspect-ratio:4/3;max-width:320px;width:100%;cursor:pointer;overflow:hidden;position:relative;background:var(--bg);text-align:center;color:var(--muted);font-weight:700;font-size:14px;padding:0}
+.drop.over{border-color:var(--teal)}
+.drop img{width:100%;height:100%;object-fit:cover;display:block}
+.fotobox{display:grid;gap:8px;justify-items:start}
+.count{font-weight:400;color:var(--muted);font-size:12px;justify-self:end}
+.count.bad{color:var(--rose);font-weight:700}
+/* faq */
+.faq-item{display:grid;gap:8px;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px}
+.faq-item .acts{justify-content:flex-end}
+/* google preview */
+.serp{background:var(--bg);border-radius:14px;padding:14px;font-family:Arial,sans-serif}
+.serp .u{font-size:13px;color:var(--muted)}
+.serp .t{font-size:19px;color:#1a0dab;margin:2px 0;line-height:1.3}
+:root[data-theme=dark] .serp .t{color:#8ab4f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .serp .t{color:#8ab4f8}}
+.serp .d{font-size:14px;color:var(--muted)}
+.days{display:flex;flex-wrap:wrap;gap:8px}
+.days label{display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+.log{font:13px/1.6 ui-monospace,Consolas,monospace;background:var(--bg);border-radius:12px;padding:12px;max-height:240px;overflow:auto;white-space:pre-wrap;margin:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--deep);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;z-index:50;max-width:92vw;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section id="login">
+  <form class="panel" id="flogin" autocomplete="on" novalidate>
+    <img class="logo" src="img/logo.webp" alt="" width="84" height="84" onerror="this.remove()">
+    <h1 style="text-align:center">Painel do Gelado Supremo</h1>
+    <p class="hint" style="text-align:center;margin:0">Área restrita. Entre com seu usuário e senha.</p>
+    <label>Usuário<input id="luser" required autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
+    <label>Senha<input id="lpass" type="password" required autocomplete="current-password"></label>
+    <label class="check"><input type="checkbox" id="lremember"> Manter conectado neste aparelho</label>
+    <div id="setup" hidden style="display:grid;gap:12px">
+      <p class="msg warn" id="setupmsg">Primeiro acesso: falta conectar o painel ao GitHub. Isso é feito uma única vez; depois basta usuário e senha, em qualquer aparelho.</p>
+      <label>Chave do GitHub (token)<input id="ltoken" type="password" autocomplete="off" placeholder="github_pat_..."></label>
+      <details class="help">
+        <summary>Como criar a chave</summary>
+        <ol>
+          <li>No GitHub, abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings › Developer settings › Fine-grained tokens › Generate new token</a>.</li>
+          <li>Dê um nome (ex.: “Painel Gelado Supremo”) e uma validade.</li>
+          <li>Em <b>Repository access</b>, escolha <b>Only select repositories</b> e marque <b>geladosupremo</b>.</li>
+          <li>Em <b>Permissions › Repository permissions</b>, coloque <b>Contents</b> em <b>Read and write</b>.</li>
+          <li>Gere a chave, copie e cole aqui.</li>
+        </ol>
+      </details>
+      <details class="help">
+        <summary>Avançado</summary>
+        <div class="grid2" style="margin-top:10px">
+          <label>Repositório<input id="lrepo" value="danilostoropack-oss/geladosupremo" autocomplete="off"></label>
+          <label>Branch<input id="lbranch" value="main" autocomplete="off"></label>
+        </div>
+      </details>
+    </div>
+    <p class="msg err" id="lerr" role="alert" hidden></p>
+    <button class="btn" type="submit" id="lbtn">Entrar</button>
+  </form>
+</section>
+
+<!-- ============ APP ============ -->
+<div id="app" hidden>
+  <div class="top"><div class="wrap">
+    <h1>Painel Gelado Supremo<small id="repoinfo"></small></h1>
+    <span class="status" id="status">Tudo publicado</span>
+    <a class="btn alt sm" id="versite" href="#" target="_blank" rel="noopener">Ver site</a>
+    <button class="btn alt sm" id="bprev" type="button">Pré-visualizar</button>
+    <button class="btn alt sm" id="bdesf" type="button" disabled>Desfazer</button>
+    <button class="btn sm" id="bpub" type="button" disabled>Publicar</button>
+    <button class="btn ghost sm" id="bacesso" type="button">Usuário e senha</button>
+    <button class="btn ghost sm" id="bsair" type="button">Sair</button>
+  </div></div>
+
+  <main class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="produtos">Produtos</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="config">Configurações</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="seo">SEO e Google</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="faq">Dúvidas (FAQ)</button>
+    </div>
+
+    <!-- PRODUTOS -->
+    <section data-pane="produtos">
+      <div class="bar">
+        <button class="btn" type="button" id="bnovo">+ Novo produto</button>
+        <input type="search" id="busca" placeholder="Buscar produto..." aria-label="Buscar produto">
+        <span class="hint" id="pcount"></span>
+      </div>
+      <div class="list" id="plist"></div>
+    </section>
+
+    <!-- CONFIG -->
+    <section data-pane="config" hidden>
+      <div style="display:grid;gap:16px">
+        <div class="panel">
+          <h2>Negócio</h2>
+          <div class="grid2">
+            <label>Nome da loja<input data-c="nome"></label>
+            <label>WhatsApp que recebe os pedidos<input data-c="whatsapp" inputmode="tel" placeholder="5511999999999"><span class="hint">Com 55 + DDD + número, só números.</span></label>
+            <label>Instagram<input data-c="instagram" placeholder="gelado_supremo"></label>
+            <div class="grid2"><label>Cidade<input data-c="cidade"></label><label>UF<input data-c="uf" maxlength="2"></label></div>
+          </div>
+          <p class="msg warn" id="wawarn" hidden>O WhatsApp ainda está com o número de exemplo. Troque pelo número real antes de divulgar o site.</p>
+        </div>
+        <div class="panel">
+          <h2>Entrega e pedidos</h2>
+          <label>Cidades e bairros atendidos<textarea data-c="areas" data-lines></textarea><span class="hint">Um por linha. Aparecem no site e no Google.</span></label>
+          <div class="grid2">
+            <label>Antecedência recomendada para festas (dias)<input type="number" min="0" max="60" data-c="antecedencia"></label>
+            <label>Antecedência mínima aceita no pedido (dias)<input type="number" min="0" max="60" data-c="antecedenciaMin"><span class="hint">0 = permite pedir para hoje.</span></label>
+            <label>Entregas a partir de<input type="time" data-c="horaInicio"></label>
+            <label>Entregas até<input type="time" data-c="horaFim"></label>
+          </div>
+          <div><p style="font-weight:700;font-size:14px;margin:0 0 6px">Dias com entrega</p><div class="days" id="dias"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO -->
+    <section data-pane="seo" hidden>
+      <div style="display:grid;gap:16px">
+        <div class="panel">
+          <h2>Como o site aparece no Google</h2>
+          <div class="serp" aria-label="Prévia do resultado no Google"><div class="u" id="serpu"></div><div class="t" id="serpt"></div><div class="d" id="serpd"></div></div>
+          <label>Título da página <span class="count" id="ct"></span><input data-c="seoTitulo"><span class="hint">Ideal: até 60 caracteres, com o principal serviço e a cidade.</span></label>
+          <label>Descrição <span class="count" id="cd"></span><textarea data-c="seoDescricao"></textarea><span class="hint">Ideal: 120 a 160 caracteres. É o texto que aparece abaixo do título na busca.</span></label>
+          <label>Endereço do site<input data-c="siteUrl" type="url"><span class="hint">Se usar domínio próprio (ex.: https://geladosupremo.com.br/), troque aqui. Usado no link canônico, sitemap e redes sociais.</span></label>
+        </div>
+        <div class="panel">
+          <h2>Ferramentas do Google</h2>
+          <label>Código de verificação do Search Console<input data-c="googleVerificacao" placeholder="ex.: AbC123..."><span class="hint">No Search Console, escolha verificar por “Tag HTML” e cole só o valor de content="...".</span></label>
+          <label>ID do Google Analytics 4<input data-c="ga4" placeholder="G-XXXXXXXXXX"><span class="hint">Opcional. Conta também cada pedido enviado ao WhatsApp como conversão (generate_lead).</span></label>
+          <p class="hint" style="margin:0">Depois de publicar, envie o sitemap no Search Console: <code id="smurl"></code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section data-pane="faq" hidden>
+      <div class="bar"><button class="btn" type="button" id="bfaq">+ Nova pergunta</button>
+        <span class="hint">Pode usar {cidade}, {areas}, {antecedencia} e {horario} nas respostas: são trocados pelos valores das Configurações.</span></div>
+      <div class="list" id="flist"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ EDITOR DE PRODUTO ============ -->
+<dialog id="dprod" aria-labelledby="dpt">
+  <form method="dialog" id="fprod" novalidate>
+    <h2 id="dpt">Produto</h2>
+    <div class="fotobox">
+      <span style="font-weight:700;font-size:14px">Foto</span>
+      <button type="button" class="drop" id="drop"><span id="droptxt">Toque para escolher uma foto<br><span class="hint">ou arraste aqui · JPG, PNG, HEIC</span></span><img id="dropimg" alt="" hidden></button>
+      <input type="file" id="ffoto" accept="image/*" hidden>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn alt sm" id="btroca" hidden>Trocar foto</button><button type="button" class="btn danger sm" id="btira" hidden>Remover foto</button></div>
+      <span class="hint">A foto é recortada em 4:3 e otimizada automaticamente.</span>
+    </div>
+    <label>Nome<input id="pnome" required maxlength="60"></label>
+    <label>Descrição <span class="count" id="cdesc"></span><textarea id="pdesc" maxlength="220"></textarea></label>
+    <div class="grid3">
+      <label>Preço (R$)<input id="ppreco" type="number" min="0" step="0.01" inputmode="decimal" required></label>
+      <label>Vendido<select id="punid"></select></label>
+      <label>Pedido mínimo<input id="pmin" type="number" min="0" step="1" placeholder="0"></label>
+    </div>
+    <div class="grid2">
+      <label>Categoria<input id="pcat" list="cats" placeholder="Ex.: Bolos"><datalist id="cats"></datalist></label>
+      <label>Cor (quando não há foto)<input id="pcor" type="color"></label>
+    </div>
+    <label>Texto alternativo da foto <span class="hint">(ajuda no Google Imagens)</span><input id="palt" maxlength="125" placeholder="Ex.: Bolo confeitado de morango com chantilly e flores"></label>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <label class="check"><input type="checkbox" id="pativo"> Visível no site</label>
+      <label class="check"><input type="checkbox" id="pdest"> Selo “Mais pedido”</label>
+      <label class="check"><input type="checkbox" id="papartir"> Mostrar “a partir de”</label>
+    </div>
+    <p class="msg err" id="perr" hidden></p>
+    <div class="foot"><button class="btn alt" type="button" id="pcancel">Cancelar</button><button class="btn" id="psave" value="ok" type="submit">Salvar produto</button></div>
+  </form>
+</dialog>
+
+<!-- ============ TROCAR ACESSO ============ -->
+<dialog id="dacesso" aria-labelledby="dat">
+  <form id="facesso" class="body" novalidate>
+    <h2 id="dat">Trocar usuário e senha</h2>
+    <p class="hint" style="margin:0">Vale para todos os aparelhos assim que salvar.</p>
+    <label>Novo usuário<input id="nuser" autocomplete="username" autocapitalize="off" spellcheck="false"></label>
+    <label>Nova senha<input id="npass" type="password" autocomplete="new-password"><span class="hint">Mínimo de 10 caracteres. Misture letras, números e símbolos.</span></label>
+    <label>Repita a nova senha<input id="npass2" type="password" autocomplete="new-password"></label>
+    <label>Nova chave do GitHub <span class="hint">(opcional, só se a atual vencer)</span><input id="ntoken" type="password" autocomplete="off" placeholder="deixe em branco para manter"></label>
+    <p class="msg err" id="aerr" hidden></p>
+    <div class="foot"><button class="btn alt" type="button" id="acancel">Cancelar</button><button class="btn" type="submit" id="asave">Salvar</button></div>
+  </form>
+</dialog>
+
+<!-- ============ CONFIRMAÇÃO ============ -->
+<dialog id="dconf"><form method="dialog" class="body">
+  <h2 id="ctit">Confirmar</h2><p id="ctxt" style="margin:0"></p>
+  <div class="foot"><button class="btn alt" value="no">Cancelar</button><button class="btn" value="yes" id="cyes">Confirmar</button></div>
+</form></dialog>
+
+<!-- ============ PUBLICAÇÃO ============ -->
+<dialog id="dpub"><div class="body">
+  <h2 id="pubt">Publicando...</h2>
+  <pre class="log" id="publog"></pre>
+  <p class="msg" id="pubmsg" hidden></p>
+  <div class="foot"><button class="btn" type="button" id="pubok" disabled>Fechar</button></div>
+</div></dialog>
+
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="assets/gs-build.js"></script>
+<script>
+(function () {
+  "use strict";
+  var B = window.GSBuild;
+  var $ = function (id) { return document.getElementById(id); };
+  var API = "https://api.github.com";
+  var S = { token: "", repo: "", branch: "main" };
+  var html = "";          // index.html atual do repositório
+  var orig = "";          // dados publicados (JSON)
+  var D = null;           // dados em edição
+  var novasFotos = {};    // caminho -> { b64, url }
+  var remover = {};       // caminhos de fotos para apagar do repositório
+
+  /* ---------------- utilidades ---------------- */
+  function toast(t) { var el = $("toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 2600); }
+  function b64ToText(b) { var bin = atob(b.replace(/\s/g, "")), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new TextDecoder().decode(u); }
+  function textToB64(s) { var u = new TextEncoder().encode(s), bin = ""; for (var i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function store() { try { return localStorage; } catch (e) { return null; } }
+  function sstore() { try { return sessionStorage; } catch (e) { return null; } }
+
+  function gh(method, path, body) {
+    var h = { Authorization: "Bearer " + S.token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+    if (body) h["Content-Type"] = "application/json";
+    return fetch(API + "/repos/" + S.repo + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined, cache: "no-store" })
+      .then(function (r) {
+        if (r.status === 204) return null;
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) {
+            var e = new Error(j.message || ("Erro " + r.status)); e.status = r.status; throw e;
+          }
+          return j;
+        });
+      });
+  }
+  function encPath(p) { return p.split("/").map(encodeURIComponent).join("/"); }
+  function getFile(p) { return gh("GET", "/contents/" + encPath(p) + "?ref=" + encodeURIComponent(S.branch) + "&_=" + Date.now()); }
+  function getSha(p) { return getFile(p).then(function (f) { return f.sha; }, function (e) { if (e.status === 404) return null; throw e; }); }
+  function putFile(p, b64, msg, sha) {
+    var body = { message: msg, content: b64, branch: S.branch };
+    if (sha) body.sha = sha;
+    return gh("PUT", "/contents/" + encPath(p), body);
+  }
+  function rawUrl(p) { return "https://raw.githubusercontent.com/" + S.repo + "/" + encodeURIComponent(S.branch) + "/" + encPath(p); }
+  function imgSrc(p) { if (!p) return ""; if (novasFotos[p]) return novasFotos[p].url; if (/^(https?:|data:)/.test(p)) return p; return rawUrl(p); }
+  function erroAmigavel(e) {
+    if (e.status === 401) return "Chave de acesso inválida ou expirada.";
+    if (e.status === 403) return "A chave não tem permissão de escrita (Contents: Read and write) neste repositório.";
+    if (e.status === 404) return "Repositório, branch ou arquivo não encontrado. Confira o nome e se a chave tem acesso a ele.";
+    if (e.status === 409) return "O site foi alterado em outro lugar enquanto você editava. Recarregue o painel e tente de novo.";
+    if (e instanceof TypeError) return "Sem conexão com o GitHub. Verifique a internet.";
+    return e.message || String(e);
+  }
+
+  /* ---------------- login (usuário e senha) ----------------
+   * O site é estático, então não há servidor para conferir a senha.
+   * A chave do GitHub fica guardada CRIPTOGRAFADA em assets/acesso.json
+   * (AES-GCM, chave derivada de usuário+senha com PBKDF2-SHA256).
+   * Só quem sabe usuário e senha consegue abrir a chave e publicar.
+   */
+  var REPO_PADRAO = "danilostoropack-oss/geladosupremo", ACESSO = "assets/acesso.json";
+  var cred = null, acessoSha = null;
+
+  function bytesB64(u8) { var bin = ""; for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]); return btoa(bin); }
+  function b64Bytes(b) { var bin = atob(b), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  function derivar(u, p, salt, iter) {
+    return crypto.subtle.importKey("raw", new TextEncoder().encode(u + "\n" + p), "PBKDF2", false, ["deriveKey"]).then(function (k) {
+      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" }, k, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    });
+  }
+  function cifrar(u, p, obj) {
+    var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = 600000;
+    return derivar(u, p, salt, iter).then(function (k) {
+      return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, new TextEncoder().encode(JSON.stringify(obj)));
+    }).then(function (ct) {
+      return { v: 1, kdf: "PBKDF2-SHA256", iter: iter, salt: bytesB64(salt), iv: bytesB64(iv), data: bytesB64(new Uint8Array(ct)) };
+    });
+  }
+  function decifrar(u, p, a) {
+    return derivar(u, p, b64Bytes(a.salt), a.iter).then(function (k) {
+      return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64Bytes(a.iv) }, k, b64Bytes(a.data));
+    }).then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); }, function () {
+      var e = new Error("Usuário ou senha incorretos."); e.cred = true; throw e;
+    });
+  }
+  // Lê o arquivo de acesso: primeiro direto do GitHub (sempre atualizado), depois do próprio site.
+  function lerAcesso() {
+    return fetch(API + "/repos/" + REPO_PADRAO + "/contents/" + ACESSO + "?_=" + Date.now(), { cache: "no-store", headers: { Accept: "application/vnd.github+json" } })
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (f) { acessoSha = f.sha; return JSON.parse(b64ToText(f.content)); })
+      .catch(function () {
+        return fetch(ACESSO + "?_=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+      })
+      .catch(function () { throw new Error("Não foi possível carregar o arquivo de acesso (assets/acesso.json). Verifique a internet e se o site já foi enviado ao GitHub."); });
+  }
+  function gravarAcesso(u, p, obj, msg) {
+    return cifrar(u, p, obj).then(function (a) {
+      return getSha(ACESSO).then(function (sha) {
+        return putFile(ACESSO, textToB64(JSON.stringify(a, null, 1) + "\n"), msg, sha);
+      });
+    });
+  }
+
+  function salvarSessao(lembrar) {
+    var v = JSON.stringify(S), l = store(), s = sstore();
+    try { if (lembrar && l) { l.setItem("gs-admin", v); if (s) s.removeItem("gs-admin"); } else { if (s) s.setItem("gs-admin", v); if (l) l.removeItem("gs-admin"); } } catch (e) {}
+  }
+  function lerSessao() {
+    try { var v = (sstore() && sstore().getItem("gs-admin")) || (store() && store().getItem("gs-admin")); return v ? JSON.parse(v) : null; } catch (e) { return null; }
+  }
+  function sair() {
+    try { store() && store().removeItem("gs-admin"); sstore() && sstore().removeItem("gs-admin"); } catch (e) {}
+    location.reload();
+  }
+  function abrirApp() {
+    $("login").hidden = true; $("app").hidden = false;
+    $("repoinfo").textContent = S.repo + " · " + S.branch;
+  }
+  function conectar() {
+    return gh("GET", "").then(function (r) {
+      if (r.permissions && !r.permissions.push) { var e = new Error(); e.status = 403; throw e; }
+      return carregar();
+    });
+  }
+  function pedirChave(msg) {
+    $("setup").hidden = false; $("setupmsg").textContent = msg; $("ltoken").value = ""; $("ltoken").focus();
+  }
+
+  function carregar() {
+    return getFile("index.html").then(function (f) {
+      html = b64ToText(f.content);
+      try { D = B.extrair(html); } catch (e) { throw new Error("O index.html do repositório ainda é a versão antiga, sem o bloco de dados do painel. Envie a nova versão do site para o GitHub primeiro."); }
+      D.produtos = D.produtos || []; D.faq = D.faq || []; D.config = D.config || {};
+      orig = JSON.stringify(D); novasFotos = {}; remover = {};
+      renderTudo();
+    });
+  }
+
+  var falhas = 0;
+  $("flogin").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = $("luser").value.trim(), p = $("lpass").value, btn = $("lbtn"), err = $("lerr"), lembrar = $("lremember").checked;
+    var configurando = !$("setup").hidden;
+    if (!u || !p) { err.textContent = "Informe usuário e senha."; err.hidden = false; return; }
+    if (configurando && !$("ltoken").value.trim()) { err.textContent = "Cole a chave do GitHub."; err.hidden = false; $("ltoken").focus(); return; }
+    btn.disabled = true; btn.textContent = "Verificando..."; err.hidden = true;
+    var precisaGravar = false;
+    lerAcesso()
+      .then(function (a) { return decifrar(u, p, a); })
+      .then(function (obj) {
+        falhas = 0; cred = { u: u, p: p };
+        S.repo = obj.repo || REPO_PADRAO; S.branch = obj.branch || "main"; S.token = obj.token || "";
+        if (configurando) {
+          S.token = $("ltoken").value.trim();
+          S.repo = $("lrepo").value.trim().replace(/^https:\/\/github\.com\//, "").replace(/\.git$/, "").replace(/\/$/, "") || REPO_PADRAO;
+          S.branch = $("lbranch").value.trim() || "main";
+          precisaGravar = true;
+        } else if (!S.token) {
+          pedirChave("Primeiro acesso: falta conectar o painel ao GitHub. Isso é feito uma única vez; depois basta usuário e senha, em qualquer aparelho.");
+          var stop = new Error(""); stop.silencio = true; throw stop;
+        }
+        btn.textContent = "Conectando...";
+        return conectar();
+      })
+      .then(function () {
+        if (precisaGravar) return gravarAcesso(cred.u, cred.p, { token: S.token, repo: S.repo, branch: S.branch }, "Painel: configura acesso").then(function () { toast("Painel conectado ao GitHub"); });
+      })
+      .then(function () { salvarSessao(lembrar); $("lpass").value = ""; abrirApp(); })
+      .catch(function (e) {
+        if (e.silencio) return;
+        if (e.cred) { falhas++; }
+        if (e.status === 401 && cred) { pedirChave("A chave do GitHub venceu ou foi revogada. Cole uma chave nova para continuar."); }
+        err.textContent = e.cred ? e.message : erroAmigavel(e); err.hidden = false;
+      })
+      .then(function () {
+        var espera = falhas >= 3 ? Math.min(30, (falhas - 2) * 5) : 0;
+        if (!espera) { btn.disabled = false; btn.textContent = configurando || !$("setup").hidden ? "Conectar e entrar" : "Entrar"; return; }
+        var t = espera; btn.textContent = "Aguarde " + t + "s";
+        var iv = setInterval(function () { t--; if (t <= 0) { clearInterval(iv); btn.disabled = false; btn.textContent = "Entrar"; } else btn.textContent = "Aguarde " + t + "s"; }, 1000);
+      });
+  });
+
+  $("bsair").addEventListener("click", function () {
+    if (sujo()) confirmar("Sair sem publicar?", "Você tem alterações que ainda não foram publicadas. Elas serão perdidas.", "Sair mesmo assim").then(function (ok) { if (ok) { sujoForcar = true; sair(); } });
+    else sair();
+  });
+
+  /* trocar usuário e senha */
+  $("bacesso").addEventListener("click", function () {
+    $("nuser").value = cred ? cred.u : ""; $("npass").value = ""; $("npass2").value = ""; $("ntoken").value = ""; $("aerr").hidden = true;
+    $("dacesso").showModal();
+  });
+  $("acancel").addEventListener("click", function () { $("dacesso").close(); });
+  $("facesso").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = $("nuser").value.trim(), p = $("npass").value, p2 = $("npass2").value, tk = $("ntoken").value.trim(), er = $("aerr");
+    function falha(t) { er.textContent = t; er.hidden = false; }
+    if (u.length < 3) return falha("O usuário precisa ter pelo menos 3 caracteres.");
+    if (p.length < 10) return falha("A senha precisa ter pelo menos 10 caracteres.");
+    if (p !== p2) return falha("As senhas não conferem.");
+    var btn = $("asave"); btn.disabled = true; btn.textContent = "Salvando..."; er.hidden = true;
+    var antigo = S.token;
+    if (tk) S.token = tk;
+    (tk ? gh("GET", "") : Promise.resolve())
+      .then(function () { return gravarAcesso(u, p, { token: S.token, repo: S.repo, branch: S.branch }, "Painel: troca usuário e senha"); })
+      .then(function () { cred = { u: u, p: p }; salvarSessao(!!(store() && store().getItem("gs-admin"))); $("dacesso").close(); toast("Usuário e senha atualizados"); })
+      .catch(function (e2) { S.token = antigo; falha(erroAmigavel(e2)); })
+      .then(function () { btn.disabled = false; btn.textContent = "Salvar"; });
+  });
+
+  /* ---------------- estado ---------------- */
+  var sujoForcar = false;
+  function sujo() { return D && (JSON.stringify(D) !== orig || Object.keys(novasFotos).length > 0); }
+  function marca() {
+    var s = sujo(), st = $("status");
+    st.textContent = s ? "Alterações não publicadas" : "Tudo publicado";
+    st.classList.toggle("dirty", !!s);
+    $("bpub").disabled = !s; $("bdesf").disabled = !s;
+  }
+  window.addEventListener("beforeunload", function (e) { if (sujo() && !sujoForcar) { e.preventDefault(); e.returnValue = ""; } });
+
+  function renderTudo() { renderProdutos(); renderConfig(); renderFaq(); marca(); }
+
+  /* ---------------- abas ---------------- */
+  document.querySelectorAll(".tab").forEach(function (t) {
+    t.addEventListener("click", function () {
+      document.querySelectorAll(".tab").forEach(function (x) { x.setAttribute("aria-selected", x === t ? "true" : "false"); });
+      document.querySelectorAll("[data-pane]").forEach(function (p) { p.hidden = p.getAttribute("data-pane") !== t.getAttribute("data-tab"); });
+    });
+  });
+
+  /* ---------------- produtos ---------------- */
+  function renderProdutos() {
+    var q = $("busca").value.trim().toLowerCase(), h = "", list = D.produtos;
+    var on = list.filter(function (p) { return p.ativo !== false; }).length;
+    $("pcount").textContent = list.length + " produtos · " + on + " visíveis";
+    list.forEach(function (p, i) {
+      if (q && (p.nome + " " + (p.categoria || "")).toLowerCase().indexOf(q) < 0) return;
+      var th = p.foto ? '<img class="thumb" src="' + B.esc(imgSrc(p.foto)) + '" alt="" loading="lazy">' : '<span class="thumb"><span style="background:' + B.esc(p.cor || "#f2a1b6") + '"></span></span>';
+      h += '<div class="item' + (p.ativo === false ? " off" : "") + '" data-i="' + i + '">' + th +
+        "<div><h3>" + B.esc(p.nome) + "</h3><div class=\"meta\"><b>" + B.esc(B.precoTexto(p)) + "</b><span>" + B.esc(p.categoria || "Sem categoria") + "</span>" +
+        (p.ativo === false ? '<span class="pill off">Oculto</span>' : "") + (p.destaque ? '<span class="pill">Mais pedido</span>' : "") +
+        (p.foto && novasFotos[p.foto] ? '<span class="pill new">Foto nova</span>' : "") + "</div></div>" +
+        '<div class="acts">' +
+        '<button class="btn alt icon" type="button" data-a="up" aria-label="Mover ' + B.esc(p.nome) + ' para cima"' + (i === 0 ? " disabled" : "") + ">↑</button>" +
+        '<button class="btn alt icon" type="button" data-a="down" aria-label="Mover ' + B.esc(p.nome) + ' para baixo"' + (i === list.length - 1 ? " disabled" : "") + ">↓</button>" +
+        '<button class="btn alt sm" type="button" data-a="vis">' + (p.ativo === false ? "Mostrar" : "Ocultar") + "</button>" +
+        '<button class="btn alt sm" type="button" data-a="edit">Editar</button>' +
+        '<button class="btn danger sm" type="button" data-a="del">Excluir</button></div></div>';
+    });
+    $("plist").innerHTML = h || '<div class="empty">' + (q ? "Nenhum produto encontrado." : "Nenhum produto ainda. Clique em “+ Novo produto”.") + "</div>";
+  }
+  $("busca").addEventListener("input", renderProdutos);
+  $("plist").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-a]"); if (!b) return;
+    var i = +b.closest("[data-i]").getAttribute("data-i"), L = D.produtos, p = L[i], a = b.getAttribute("data-a");
+    if (a === "up" && i > 0) { L.splice(i - 1, 0, L.splice(i, 1)[0]); }
+    else if (a === "down" && i < L.length - 1) { L.splice(i + 1, 0, L.splice(i, 1)[0]); }
+    else if (a === "vis") { p.ativo = p.ativo === false; toast(p.ativo ? "Produto visível no site" : "Produto oculto do site"); }
+    else if (a === "edit") { abrirEditor(i); return; }
+    else if (a === "del") {
+      confirmar("Excluir produto", "Excluir “" + p.nome + "” do cardápio? Se quiser só tirar do ar por um tempo, use “Ocultar”.", "Excluir").then(function (ok) {
+        if (!ok) return;
+        descartarFoto(p.foto); L.splice(i, 1); renderProdutos(); marca(); toast("Produto excluído");
+      });
+      return;
+    }
+    renderProdutos(); marca();
+  });
+  function descartarFoto(path) {
+    if (!path) return;
+    if (novasFotos[path]) delete novasFotos[path];
+    else if (/^img\/produtos\//.test(path)) remover[path] = true;
+  }
+
+  /* editor */
+  var editIdx = -1, fotoTemp = null; // fotoTemp: undefined = sem mudança; {path,b64,url} = nova; "" = removida
+  var sel = $("punid");
+  Object.keys(B.UNIDADES).forEach(function (k) { var o = document.createElement("option"); o.value = k; o.textContent = B.UNIDADES[k].rotulo; sel.appendChild(o); });
+
+  function abrirEditor(i) {
+    editIdx = i; fotoTemp = undefined;
+    var p = i >= 0 ? D.produtos[i] : { nome: "", desc: "", preco: "", unidade: "un", categoria: "", cor: "#f2a1b6", foto: "", ativo: true, destaque: false, aPartir: false, minimo: 0, alt: "" };
+    $("dpt").textContent = i >= 0 ? "Editar produto" : "Novo produto";
+    $("pnome").value = p.nome; $("pdesc").value = p.desc || ""; $("ppreco").value = p.preco;
+    $("punid").value = p.unidade || "un"; $("pmin").value = p.minimo || ""; $("pcat").value = p.categoria || "";
+    $("pcor").value = p.cor || "#f2a1b6"; $("palt").value = p.alt || "";
+    $("pativo").checked = p.ativo !== false; $("pdest").checked = !!p.destaque; $("papartir").checked = !!p.aPartir;
+    var cats = {}; D.produtos.forEach(function (x) { if (x.categoria) cats[x.categoria] = 1; });
+    $("cats").innerHTML = Object.keys(cats).map(function (c) { return '<option value="' + B.esc(c) + '">'; }).join("");
+    mostrarFoto(p.foto ? imgSrc(p.foto) : "");
+    $("perr").hidden = true; contDesc();
+    $("dprod").showModal();
+    if (i < 0) $("pnome").focus();
+  }
+  function mostrarFoto(src) {
+    $("dropimg").hidden = !src; if (src) $("dropimg").src = src; else $("dropimg").removeAttribute("src");
+    $("droptxt").hidden = !!src; $("btroca").hidden = !src; $("btira").hidden = !src;
+  }
+  function contDesc() { var n = $("pdesc").value.length, c = $("cdesc"); c.textContent = n + "/220"; c.classList.toggle("bad", n > 180); }
+  $("pdesc").addEventListener("input", contDesc);
+  $("pcancel").addEventListener("click", function () { $("dprod").close(); });
+  $("bnovo").addEventListener("click", function () { abrirEditor(-1); });
+  $("drop").addEventListener("click", function () { $("ffoto").click(); });
+  $("btroca").addEventListener("click", function () { $("ffoto").click(); });
+  $("btira").addEventListener("click", function () { fotoTemp = ""; mostrarFoto(""); });
+  $("ffoto").addEventListener("change", function () { if (this.files[0]) processarFoto(this.files[0]); this.value = ""; });
+  ["dragenter", "dragover"].forEach(function (ev) { $("drop").addEventListener(ev, function (e) { e.preventDefault(); this.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (ev) { $("drop").addEventListener(ev, function (e) { e.preventDefault(); this.classList.remove("over"); }); });
+  $("drop").addEventListener("drop", function (e) { var f = e.dataTransfer.files[0]; if (f) processarFoto(f); });
+
+  function processarFoto(file) {
+    if (!/^image\//.test(file.type) && !/\.(heic|heif)$/i.test(file.name)) { erroProd("Escolha um arquivo de imagem."); return; }
+    $("droptxt").hidden = false; $("droptxt").textContent = "Otimizando foto...";
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function () {
+      var W = 960, H = 720, r = W / H, sw = img.naturalWidth, sh = img.naturalHeight, sx = 0, sy = 0;
+      if (sw / sh > r) { var nw = sh * r; sx = (sw - nw) / 2; sw = nw; } else { var nh = sw / r; sy = (sh - nh) / 2; sh = nh; }
+      if (img.naturalWidth < W) { W = Math.round(img.naturalWidth); H = Math.round(W / r); }
+      var c = document.createElement("canvas"); c.width = W; c.height = H;
+      var g = c.getContext("2d"); g.imageSmoothingQuality = "high"; g.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+      var data = c.toDataURL("image/webp", 0.82), ext = "webp";
+      if (data.indexOf("data:image/webp") !== 0) { data = c.toDataURL("image/jpeg", 0.85); ext = "jpg"; }
+      URL.revokeObjectURL(url);
+      var nome = B.slug($("pnome").value || "produto");
+      fotoTemp = { path: "img/produtos/" + nome + "-" + Date.now().toString(36) + "." + ext, b64: data.split(",")[1], url: data };
+      mostrarFoto(data); $("droptxt").innerHTML = 'Toque para escolher uma foto<br><span class="hint">ou arraste aqui · JPG, PNG, HEIC</span>';
+      var kb = Math.round(fotoTemp.b64.length * 0.75 / 1024);
+      toast("Foto pronta (" + kb + " KB)");
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); erroProd("Não foi possível abrir esta imagem. Tente uma foto JPG ou PNG."); mostrarFoto(""); };
+    img.src = url;
+  }
+  function erroProd(t) { var e = $("perr"); e.textContent = t; e.hidden = !t; }
+
+  $("fprod").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var nome = $("pnome").value.trim(), preco = parseFloat(String($("ppreco").value).replace(",", "."));
+    if (!nome) { erroProd("Informe o nome do produto."); $("pnome").focus(); return; }
+    if (!(preco >= 0)) { erroProd("Informe um preço válido."); $("ppreco").focus(); return; }
+    var novo = editIdx < 0, p = novo ? {} : D.produtos[editIdx];
+    if (novo) {
+      var base = B.slug(nome), id = base, n = 2;
+      while (D.produtos.some(function (x) { return x.id === id; })) id = base + "-" + n++;
+      p.id = id;
+    }
+    p.nome = nome; p.desc = $("pdesc").value.trim(); p.preco = Math.round(preco * 100) / 100;
+    p.unidade = $("punid").value; p.minimo = Math.max(0, parseInt($("pmin").value, 10) || 0);
+    p.categoria = $("pcat").value.trim() || "Outros"; p.cor = $("pcor").value; p.alt = $("palt").value.trim();
+    p.ativo = $("pativo").checked; p.destaque = $("pdest").checked; p.aPartir = $("papartir").checked;
+    if (fotoTemp !== undefined) {
+      descartarFoto(p.foto);
+      if (fotoTemp) { novasFotos[fotoTemp.path] = { b64: fotoTemp.b64, url: fotoTemp.url }; p.foto = fotoTemp.path; }
+      else p.foto = "";
+    }
+    if (p.foto === undefined) p.foto = "";
+    if (novo) D.produtos.push(p);
+    $("dprod").close();
+    renderProdutos(); marca(); toast(novo ? "Produto adicionado. Lembre de publicar." : "Produto atualizado. Lembre de publicar.");
+  });
+
+  /* ---------------- configurações ---------------- */
+  var dias = $("dias");
+  B.DIAS.forEach(function (d) { dias.insertAdjacentHTML("beforeend", '<label><input type="checkbox" value="' + d[0] + '"> ' + d[1] + "</label>"); });
+  function renderConfig() {
+    var c = D.config;
+    document.querySelectorAll("[data-c]").forEach(function (el) {
+      var k = el.getAttribute("data-c"), v = c[k];
+      el.value = el.hasAttribute("data-lines") ? (v || []).join("\n") : (v == null ? "" : v);
+    });
+    dias.querySelectorAll("input").forEach(function (i) { i.checked = (c.dias || []).indexOf(i.value) >= 0; });
+    seoPrev();
+  }
+  document.querySelectorAll("[data-c]").forEach(function (el) {
+    el.addEventListener("input", function () {
+      var k = el.getAttribute("data-c"), v = el.value;
+      if (el.hasAttribute("data-lines")) v = v.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      else if (el.type === "number") v = Math.max(0, parseInt(v, 10) || 0);
+      else if (k === "whatsapp") v = v.replace(/\D/g, "");
+      else if (k === "instagram") v = v.replace(/^@/, "").trim();
+      else if (k === "uf") v = v.toUpperCase();
+      else if (k === "siteUrl") v = v.trim();
+      D.config[k] = v; seoPrev(); marca();
+    });
+  });
+  dias.addEventListener("change", function () {
+    D.config.dias = [].slice.call(dias.querySelectorAll("input:checked")).map(function (i) { return i.value; });
+    marca();
+  });
+  function seoPrev() {
+    var c = D.config, t = c.seoTitulo || "", d = c.seoDescricao || "";
+    $("serpu").textContent = (c.siteUrl || "").replace(/^https?:\/\//, "").replace(/\/$/, "").replace(/\//g, " › ");
+    $("serpt").textContent = t.length > 60 ? t.slice(0, 58) + "…" : t;
+    $("serpd").textContent = d.length > 160 ? d.slice(0, 157) + "…" : d;
+    $("ct").textContent = t.length + "/60"; $("ct").classList.toggle("bad", t.length > 60 || t.length < 25);
+    $("cd").textContent = d.length + "/160"; $("cd").classList.toggle("bad", d.length > 160 || d.length < 110);
+    $("smurl").textContent = (c.siteUrl || "").replace(/\/?$/, "/") + "sitemap.xml";
+    $("versite").href = c.siteUrl || "#";
+    $("wawarn").hidden = !/^5511999999999$/.test(c.whatsapp || "");
+  }
+
+  /* ---------------- FAQ ---------------- */
+  function renderFaq() {
+    var h = "";
+    D.faq.forEach(function (f, i) {
+      h += '<div class="faq-item" data-i="' + i + '"><label>Pergunta<input data-f="p" value="' + B.esc(f.p) + '"></label>' +
+        '<label>Resposta<textarea data-f="r">' + B.esc(f.r) + "</textarea></label>" +
+        '<div class="acts"><button class="btn alt icon" type="button" data-a="up" aria-label="Subir"' + (i === 0 ? " disabled" : "") + '>↑</button>' +
+        '<button class="btn alt icon" type="button" data-a="down" aria-label="Descer"' + (i === D.faq.length - 1 ? " disabled" : "") + '>↓</button>' +
+        '<button class="btn danger sm" type="button" data-a="del">Excluir</button></div></div>';
+    });
+    $("flist").innerHTML = h || '<div class="empty">Nenhuma pergunta. Perguntas frequentes ajudam o cliente e o Google a entender o seu negócio.</div>';
+  }
+  $("bfaq").addEventListener("click", function () {
+    D.faq.push({ p: "", r: "" }); renderFaq(); marca();
+    var all = $("flist").querySelectorAll('[data-f="p"]'); all[all.length - 1].focus();
+  });
+  $("flist").addEventListener("input", function (e) {
+    var f = e.target.getAttribute("data-f"); if (!f) return;
+    D.faq[+e.target.closest("[data-i]").getAttribute("data-i")][f] = e.target.value; marca();
+  });
+  $("flist").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-a]"); if (!b) return;
+    var i = +b.closest("[data-i]").getAttribute("data-i"), L = D.faq, a = b.getAttribute("data-a");
+    if (a === "up" && i > 0) L.splice(i - 1, 0, L.splice(i, 1)[0]);
+    if (a === "down" && i < L.length - 1) L.splice(i + 1, 0, L.splice(i, 1)[0]);
+    if (a === "del") L.splice(i, 1);
+    renderFaq(); marca();
+  });
+
+  /* ---------------- confirmar ---------------- */
+  function confirmar(t, txt, sim) {
+    return new Promise(function (res) {
+      var d = $("dconf"); $("ctit").textContent = t; $("ctxt").textContent = txt; $("cyes").textContent = sim || "Confirmar";
+      d.returnValue = ""; d.showModal();
+      d.addEventListener("close", function h() { d.removeEventListener("close", h); res(d.returnValue === "yes"); });
+    });
+  }
+
+  $("bdesf").addEventListener("click", function () {
+    confirmar("Desfazer alterações", "Voltar tudo para a versão publicada? As alterações feitas desde a última publicação serão descartadas.", "Desfazer").then(function (ok) {
+      if (!ok) return; D = JSON.parse(orig); novasFotos = {}; remover = {}; renderTudo(); toast("Alterações desfeitas");
+    });
+  });
+
+  /* ---------------- validação ---------------- */
+  function limpar(d) {
+    d.faq = d.faq.filter(function (f) { return (f.p || "").trim() && (f.r || "").trim(); });
+    var c = d.config;
+    if (c.siteUrl && !/\/$/.test(c.siteUrl)) c.siteUrl += "/";
+  }
+  function validar() {
+    var c = D.config;
+    if (!/^https?:\/\/[^\s]+$/.test(c.siteUrl || "")) return "Informe o endereço do site na aba SEO (ex.: https://...).";
+    if (!(c.whatsapp || "").match(/^\d{12,13}$/)) return "O WhatsApp deve ter 55 + DDD + número (12 ou 13 dígitos).";
+    if (!c.nome) return "Informe o nome da loja em Configurações.";
+    if (c.horaInicio && c.horaFim && c.horaInicio >= c.horaFim) return "O horário inicial de entrega deve ser antes do final.";
+    return "";
+  }
+
+  /* ---------------- pré-visualizar ---------------- */
+  $("bprev").addEventListener("click", function () {
+    var d = clone(D); limpar(d);
+    try {
+      var url = (d.config.siteUrl || "").replace(/\/?$/, "/");
+      var out = B.apply(html, d, { imgUrl: function (p) { return imgSrc(p); } });
+      out = out.replace("<head>", '<head><base href="' + B.esc(url) + '">');
+      out = out.replace("<body>", '<body><div style="position:sticky;top:0;z-index:99;background:#a85d00;color:#fff;text-align:center;padding:6px;font:700 14px sans-serif">Pré-visualização — ainda não publicado</div>');
+      var w = window.open(URL.createObjectURL(new Blob([out], { type: "text/html" })), "_blank");
+      if (!w) toast("Permita pop-ups para ver a prévia.");
+    } catch (e) { toast(e.message); }
+  });
+
+  /* ---------------- publicar ---------------- */
+  function log(t) { var l = $("publog"); l.textContent += t + "\n"; l.scrollTop = l.scrollHeight; }
+  $("pubok").addEventListener("click", function () { $("dpub").close(); });
+  $("dpub").addEventListener("cancel", function (e) { if ($("pubok").disabled) e.preventDefault(); });
+
+  $("bpub").addEventListener("click", function () {
+    limpar(D); renderFaq(); seoPrev();
+    var erro = validar();
+    if (erro) { toast(erro); return; }
+    $("publog").textContent = ""; $("pubmsg").hidden = true; $("pubok").disabled = true; $("pubt").textContent = "Publicando...";
+    $("dpub").showModal();
+    var dados = clone(D), fotos = Object.keys(novasFotos), quando = new Date().toLocaleString("pt-BR");
+    var chain = Promise.resolve();
+    fotos.forEach(function (p) {
+      chain = chain.then(function () { log("Enviando foto " + p.split("/").pop() + "..."); return putFile(p, novasFotos[p].b64, "Painel: foto " + p.split("/").pop()); })
+        .then(function () { delete novasFotos[p]; });
+    });
+    chain.then(function () {
+      log("Atualizando a página (index.html)...");
+      return getFile("index.html");
+    }).then(function (f) {
+      var atual = b64ToText(f.content);
+      var novo = B.apply(atual, dados);
+      return putFile("index.html", textToB64(novo), "Painel: atualiza cardápio e SEO (" + quando + ")", f.sha).then(function () { html = novo; });
+    }).then(function () {
+      log("Atualizando sitemap.xml e robots.txt...");
+      return getSha("sitemap.xml").then(function (sha) { return putFile("sitemap.xml", textToB64(B.sitemap(dados)), "Painel: sitemap", sha); })
+        .then(function () { return getFile("robots.txt").catch(function (e) { if (e.status === 404) return null; throw e; }); })
+        .then(function (f) {
+          var novo = B.robots(dados);
+          if (f && b64ToText(f.content) === novo) return null;
+          return putFile("robots.txt", textToB64(novo), "Painel: robots", f && f.sha);
+        });
+    }).then(function () {
+      var usadas = {}; dados.produtos.forEach(function (p) { if (p.foto) usadas[p.foto] = 1; });
+      var lixo = Object.keys(remover).filter(function (p) { return !usadas[p]; }), c2 = Promise.resolve();
+      lixo.forEach(function (p) {
+        c2 = c2.then(function () {
+          log("Apagando foto antiga " + p.split("/").pop() + "...");
+          return getSha(p).then(function (sha) { if (sha) return gh("DELETE", "/contents/" + encPath(p), { message: "Painel: remove foto antiga", sha: sha, branch: S.branch }); })
+            .catch(function () { log("  (não foi possível apagar, sem problema)"); });
+        }).then(function () { delete remover[p]; });
+      });
+      return c2;
+    }).then(function () {
+      orig = JSON.stringify(dados); marca();
+      log("Pronto!");
+      $("pubt").textContent = "Publicado!";
+      var m = $("pubmsg"); m.className = "msg ok"; m.hidden = false;
+      m.textContent = "O site é atualizado em 1 a 2 minutos. Se não aparecer, recarregue a página com Ctrl+F5.";
+      renderProdutos();
+    }).catch(function (e) {
+      log("ERRO: " + erroAmigavel(e));
+      $("pubt").textContent = "Não foi possível publicar";
+      var m = $("pubmsg"); m.className = "msg err"; m.hidden = false; m.textContent = erroAmigavel(e) + " Suas alterações continuam aqui; tente publicar de novo.";
+      renderProdutos(); marca();
+    }).then(function () { $("pubok").disabled = false; });
+  });
+
+  /* ---------------- início ---------------- */
+  if (!window.crypto || !crypto.subtle) {
+    $("lerr").textContent = "Abra o painel pelo endereço do site (https://...). Este navegador não permite o login seguro aqui."; $("lerr").hidden = false;
+  }
+  var sess = lerSessao();
+  if (sess && sess.token) {
+    S = sess;
+    conectar().then(abrirApp).catch(function (e) { $("lerr").textContent = erroAmigavel(e) + " Entre de novo com usuário e senha."; $("lerr").hidden = false; });
+  } else { $("luser").focus(); }
+})();
+</script>
+</body>
+</html>
